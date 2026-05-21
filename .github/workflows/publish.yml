@@ -42,7 +42,13 @@ jobs:
         run: npm run build
 
       - name: Bump version
-        run: npm version ${{ github.event.inputs.version }}
+        run: |
+          # Get the latest published version from npm (fallback to local if unpublished)
+          PUBLISHED=$(npm view api-reforge version 2>/dev/null || node -p "require('./package.json').version")
+          echo "Latest published version: $PUBLISHED"
+          # Update package.json to match what's on npm, then bump from there
+          npm version --no-git-tag-version $PUBLISHED --allow-same-version
+          npm version ${{ github.event.inputs.version }} -m "chore: release v%s"
 
       - name: Publish to npm
         run: npm publish
@@ -50,4 +56,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push version commit and tag
-        run: git push --follow-tags
+        run: |
+          git push --follow-tags
+          echo "✅ Published $(node -p "require('./package.json').version") to npm"
