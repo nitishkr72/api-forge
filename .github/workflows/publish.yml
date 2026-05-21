@@ -1,21 +1,17 @@
-name: Publish to npm
+name: Release
 
 on:
-  # Manual trigger from GitHub UI — click "Run workflow" on Actions tab
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version bump type'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,32 +26,15 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
 
-      - name: Bump version
-        run: |
-          # Get the latest published version from npm (fallback to local if unpublished)
-          PUBLISHED=$(npm view api-reforge version 2>/dev/null || node -p "require('./package.json').version")
-          echo "Latest published version: $PUBLISHED"
-          # Update package.json to match what's on npm, then bump from there
-          npm version --no-git-tag-version $PUBLISHED --allow-same-version
-          npm version ${{ github.event.inputs.version }} -m "chore: release v%s"
-
-      - name: Publish to npm
-        run: npm publish
+      - name: Semantic Release
+        run: npx semantic-release
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Push version commit and tag
-        run: |
-          git push --follow-tags
-          echo "✅ Published $(node -p "require('./package.json').version") to npm"
