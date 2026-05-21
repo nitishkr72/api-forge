@@ -23,7 +23,7 @@
     "cli",
     "reforge"
   ],
-  "author": "",
+  "author": "Nitish Kumar",
   "license": "MIT",
   "dependencies": {
     "commander": "^11.1.0",
