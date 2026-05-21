@@ -1,0 +1,45 @@
+{
+  "name": "api-reforge",
+  "version": "1.0.0",
+  "description": "Schema conversion CLI — reforge GraphQL SDL to Postman, JSON to OpenAPI, and more",
+  "main": "dist/index.js",
+  "bin": {
+    "api-reforge": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/cli.js"
+  },
+  "keywords": [
+    "graphql",
+    "sdl",
+    "postman",
+    "openapi",
+    "json",
+    "schema",
+    "converter",
+    "generator",
+    "cli",
+    "reforge"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "graphql": "^16.8.1",
+    "inquirer": "^9.2.12",
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
